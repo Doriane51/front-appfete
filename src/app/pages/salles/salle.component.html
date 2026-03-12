@@ -1,0 +1,153 @@
+<div class="bg-white">
+  <!-- En-tête -->
+  <div class="bg-indigo-700 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-3xl font-extrabold text-white sm:text-4xl">
+        Toutes nos salles
+      </h1>
+      <p class="mt-4 text-lg text-indigo-100">
+        Trouvez la salle parfaite pour votre événement parmi notre sélection
+      </p>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-lg font-medium text-gray-900 mb-4">Filtrer les salles</h2>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
+        <!-- Recherche par nom -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Recherche</label>
+          <input type="text"
+                 [(ngModel)]="searchNom"
+                 (input)="applyFilters()"
+                 placeholder="Nom de la salle..."
+                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        </div>
+
+        <!-- Filtre capacité -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Capacité min</label>
+          <select [(ngModel)]="capaciteMin"
+                  (change)="applyFilters()"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <option [ngValue]="null">Toutes capacités</option>
+            @for (cap of capacitesOptions; track cap) {
+              <option [value]="cap">{{ cap }} personnes</option>
+            }
+          </select>
+        </div>
+
+        <!-- Filtre prix -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Prix max / heure</label>
+          <select [(ngModel)]="prixMax"
+                  (change)="applyFilters()"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <option [ngValue]="null">Tous prix</option>
+            @for (prix of prixOptions; track prix) {
+              <option [value]="prix">{{ prix }} FCFA</option>
+            }
+          </select>
+        </div>
+
+        <!-- Bouton reset -->
+        <div class="flex items-end">
+          <button (click)="resetFilters()"
+                  class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500">
+            Réinitialiser
+          </button>
+        </div>
+      </div>
+
+      <!-- Résultat count -->
+      <div class="mt-4 text-sm text-gray-500">
+        {{ filteredSalles.length }} salle(s) trouvée(s)
+      </div>
+    </div>
+  </div>
+
+  <!-- Liste des salles -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    @if (loading) {
+      <div class="flex justify-center items-center h-64">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    }
+
+    @if (!loading && filteredSalles.length === 0) {
+      <div class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune salle trouvée</h3>
+        <p class="mt-1 text-sm text-gray-500">Essayez de modifier vos filtres.</p>
+      </div>
+    }
+
+    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      @for (salle of filteredSalles; track salle.id) {
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-gray-200">
+          <div class="h-48 bg-gray-300">
+            @if (salle.images && salle.images.length > 0) {
+              <img [src]="salle.images[0]" [alt]="salle.nom" class="w-full h-full object-cover">
+            } @else {
+              <div class="w-full h-full bg-indigo-200 flex items-center justify-center">
+                <span class="text-indigo-600">Pas d'image</span>
+              </div>
+            }
+          </div>
+
+          <div class="p-6">
+            <div class="flex justify-between items-start">
+              <h3 class="text-xl font-semibold text-gray-900">{{ salle.nom }}</h3>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                {{ salle.capacite }} pers.
+              </span>
+            </div>
+
+            <p class="mt-2 text-gray-600 line-clamp-2">{{ salle.description }}</p>
+
+            <div class="mt-4 space-y-2">
+              <div class="flex items-center text-sm text-gray-500">
+                <svg class="h-5 w-5 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                {{ salle.adresse }}
+              </div>
+
+              @if (salle.equipements && salle.equipements.length > 0) {
+                <div class="flex flex-wrap gap-1">
+                  @for (equip of salle.equipements.slice(0, 3); track equip) {
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
+                      {{ equip }}
+                    </span>
+                  }
+                  @if (salle.equipements.length > 3) {
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                      +{{ salle.equipements.length - 3 }}
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="mt-6 flex items-center justify-between">
+              <div>
+                <span class="text-2xl font-bold text-indigo-600">{{ salle.prixHeure }} €</span>
+                <span class="text-sm text-gray-500">/heure</span>
+              </div>
+              <a [routerLink]="['/salles', salle.id]"
+                 class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                Voir détails
+              </a>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

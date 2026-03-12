@@ -1,0 +1,210 @@
+<div class="bg-white">
+  <!-- En-tête -->
+  <div class="bg-indigo-700 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-3xl font-extrabold text-white sm:text-4xl">
+        Dashboard Admin
+      </h1>
+      <p class="mt-4 text-lg text-indigo-100">
+        Bienvenue sur votre espace d'administration
+      </p>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    @if (loading) {
+      <div class="flex justify-center items-center h-64">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    }
+
+    @if (error) {
+      <div class="bg-red-50 border-l-4 border-red-400 p-4">
+        <p class="text-red-700">{{ error }}</p>
+      </div>
+    }
+
+    @if (!loading && !error) {
+      <!-- Stats cards -->
+      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div class="bg-white overflow-hidden shadow rounded-lg border border-gray-200">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="shrink-0 bg-indigo-500 rounded-md p-3">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Total salles</dt>
+                  <dd class="text-lg font-medium text-gray-900">{{ stats.totalSalles }}</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg border border-gray-200">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="shrink-0 bg-green-500 rounded-md p-3">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Total réservations</dt>
+                  <dd class="text-lg font-medium text-gray-900">{{ stats.totalReservations }}</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg border border-gray-200">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="shrink-0 bg-yellow-500 rounded-md p-3">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">En attente</dt>
+                  <dd class="text-lg font-medium text-gray-900">{{ stats.reservationsEnAttente }}</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg border border-gray-200">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="shrink-0 bg-purple-500 rounded-md p-3">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Chiffre d'affaires</dt>
+                  <dd class="text-lg font-medium text-gray-900">{{ stats.chiffreAffaires | number:'1.2-2' }} €</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions rapides -->
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 mb-8">
+        <div class="bg-white shadow rounded-lg border border-gray-200 p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Répartition des réservations</h3>
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between text-sm font-medium text-gray-600">
+                <span>Validées</span>
+                <span>{{ stats.reservationsValidees }}</span>
+              </div>
+              <div class="mt-1 w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-green-500 h-2 rounded-full"
+                     [style.width]="(stats.reservationsValidees / stats.totalReservations * 100) + '%'">
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm font-medium text-gray-600">
+                <span>En attente</span>
+                <span>{{ stats.reservationsEnAttente }}</span>
+              </div>
+              <div class="mt-1 w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-yellow-500 h-2 rounded-full"
+                     [style.width]="(stats.reservationsEnAttente / stats.totalReservations * 100) + '%'">
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm font-medium text-gray-600">
+                <span>Annulées/Refusées</span>
+                <span>{{ stats.reservationsAnnulees }}</span>
+              </div>
+              <div class="mt-1 w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-red-500 h-2 rounded-full"
+                     [style.width]="(stats.reservationsAnnulees / stats.totalReservations * 100) + '%'">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white shadow rounded-lg border border-gray-200 p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Actions rapides</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <a routerLink="/admin/gestion-salles"
+               class="text-center p-4 border border-gray-200 rounded-lg hover:bg-indigo-50 hover:border-indigo-300 transition">
+              <svg class="mx-auto h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              <span class="mt-2 block text-sm font-medium text-gray-900">Ajouter salle</span>
+            </a>
+            <a routerLink="/admin/gestion-reservations"
+               class="text-center p-4 border border-gray-200 rounded-lg hover:bg-indigo-50 hover:border-indigo-300 transition">
+              <svg class="mx-auto h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              <span class="mt-2 block text-sm font-medium text-gray-900">Gérer réservations</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dernières réservations -->
+      <div class="bg-white shadow rounded-lg border border-gray-200">
+        <div class="px-6 py-5 border-b border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900">Dernières réservations</h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Client</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Salle</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              @for (res of dernieresReservations; track res.id) {
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ res.user.nom }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ res.salle.nom }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ formatDate(res.dateReservation) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ getStatutBadgeClass(res.statut) }}">
+                      {{ getStatutLabel(res.statut) }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="px-6 py-4 border-t border-gray-200">
+          <a routerLink="/admin/gestion-reservations" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+            Voir toutes les réservations →
+          </a>
+        </div>
+      </div>
+    }
+  </div>
+</div>

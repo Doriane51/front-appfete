@@ -1,0 +1,279 @@
+<div class="bg-white">
+  <!-- En-tête -->
+  <div class="bg-indigo-700 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-3xl font-extrabold text-white sm:text-4xl">
+        Gestion des salles
+      </h1>
+      <p class="mt-4 text-lg text-indigo-100">
+        Ajoutez, modifiez ou supprimez des salles
+      </p>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Messages -->
+    @if (successMessage) {
+      <div class="mb-4 bg-green-50 border-l-4 border-green-400 p-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-green-700">{{ successMessage }}</p>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (error) {
+      <div class="mb-4 bg-red-50 border-l-4 border-red-400 p-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-red-700">{{ error }}</p>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Barre d'outils -->
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div class="flex-1 max-w-lg">
+        <div class="relative">
+          <input type="text"
+                 [(ngModel)]="searchTerm"
+                 (input)="filterSalles()"
+                 placeholder="Rechercher une salle..."
+                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      <button (click)="openAddModal()"
+              class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+        <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+        Ajouter une salle
+      </button>
+    </div>
+
+    <!-- Loading -->
+    @if (loading) {
+      <div class="flex justify-center items-center h-64">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    }
+
+    <!-- Tableau des salles -->
+    @if (!loading) {
+      <div class="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-200">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Salle</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Capacité</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix/heure</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Adresse</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @for (salle of filteredSalles; track salle.id) {
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    @if (salle.images && salle.images.length > 0) {
+                      <img class="h-10 w-10 rounded-full object-cover" [src]="salle.images[0]" alt="">
+                    } @else {
+                      <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                        <svg class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                      </div>
+                    }
+                    <div class="ml-4">
+                      <div class="text-sm font-medium text-gray-900">{{ salle.nom }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ salle.capacite }} pers.
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ salle.prixHeure }} €
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ salle.adresse }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button (click)="openEditModal(salle)"
+                          class="text-indigo-600 hover:text-indigo-900 mr-3">
+                    Modifier
+                  </button>
+                  <button (click)="deleteSalle(salle.id!)"
+                          class="text-red-600 hover:text-red-900">
+                    Supprimer
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="px-6 py-12 text-center text-sm text-gray-500">
+                  Aucune salle trouvée
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal Ajout/Modification -->
+@if (showModal) {
+  <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900">
+          {{ modalMode === 'add' ? 'Ajouter une salle' : 'Modifier la salle' }}
+        </h3>
+      </div>
+
+      <div class="p-6">
+        <form (ngSubmit)="saveSalle()" #salleForm="ngForm" class="space-y-4">
+          <!-- Nom -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Nom *</label>
+            <input type="text"
+                   [(ngModel)]="currentSalle.nom"
+                   name="nom"
+                   required
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Description *</label>
+            <textarea [(ngModel)]="currentSalle.description"
+                      name="description"
+                      required
+                      rows="3"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+          </div>
+
+          <!-- Adresse -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Adresse *</label>
+            <input type="text"
+                   [(ngModel)]="currentSalle.adresse"
+                   name="adresse"
+                   required
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+          </div>
+
+          <!-- Capacité et Prix -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Capacité (personnes) *</label>
+              <input type="number"
+                     [(ngModel)]="currentSalle.capacite"
+                     name="capacite"
+                     required
+                     min="1"
+                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Prix par heure (€) *</label>
+              <input type="number"
+                     [(ngModel)]="currentSalle.prixHeure"
+                     name="prixHeure"
+                     required
+                     min="0"
+                     step="0.01"
+                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+          </div>
+
+          <!-- Images -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Images (URLs)</label>
+            @for (image of currentSalle.images; track image; let i = $index) {
+              <div class="flex gap-2 mb-2">
+                <input type="url"
+                       [(ngModel)]="currentSalle.images[i]"
+                       [name]="'image' + i"
+                       placeholder="https://..."
+                       class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <button type="button"
+                        (click)="removeImage(i)"
+                        class="px-3 py-2 border border-gray-300 rounded-md text-red-600 hover:bg-red-50">
+                  ×
+                </button>
+              </div>
+            }
+            <button type="button"
+                    (click)="addImage()"
+                    class="mt-2 inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50">
+              <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Ajouter une image
+            </button>
+          </div>
+
+          <!-- Équipements -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Équipements</label>
+            @for (equip of currentSalle.equipements; track equip; let i = $index) {
+              <div class="flex gap-2 mb-2">
+                <input type="text"
+                       [(ngModel)]="currentSalle.equipements[i]"
+                       [name]="'equip' + i"
+                       placeholder="Ex: Sonorisation"
+                       class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <button type="button"
+                        (click)="removeEquipement(i)"
+                        class="px-3 py-2 border border-gray-300 rounded-md text-red-600 hover:bg-red-50">
+                  ×
+                </button>
+              </div>
+            }
+            <button type="button"
+                    (click)="addEquipement()"
+                    class="mt-2 inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50">
+              <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Ajouter un équipement
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+        <button type="button"
+                (click)="closeModal()"
+                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+          Annuler
+        </button>
+        <button type="button"
+                (click)="saveSalle()"
+                class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+          {{ modalMode === 'add' ? 'Ajouter' : 'Modifier' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

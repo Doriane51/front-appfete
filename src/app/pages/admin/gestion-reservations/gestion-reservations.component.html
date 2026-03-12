@@ -1,0 +1,167 @@
+<div class="bg-white">
+  <!-- En-tête -->
+  <div class="bg-indigo-700 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-3xl font-extrabold text-white sm:text-4xl">
+        Gestion des réservations
+      </h1>
+      <p class="mt-4 text-lg text-indigo-100">
+        Validez, refusez ou consultez toutes les réservations
+      </p>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Messages -->
+    @if (successMessage) {
+      <div class="mb-4 bg-green-50 border-l-4 border-green-400 p-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-green-700">{{ successMessage }}</p>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (error) {
+      <div class="mb-4 bg-red-50 border-l-4 border-red-400 p-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-red-700">{{ error }}</p>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Filtres -->
+    <div class="mb-6 bg-white p-4 rounded-lg shadow border border-gray-200">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <!-- Recherche -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Recherche</label>
+          <input type="text"
+                 [(ngModel)]="searchTerm"
+                 (input)="applyFilters()"
+                 placeholder="Client, salle, email..."
+                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        </div>
+
+        <!-- Filtre statut -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+          <select [(ngModel)]="statutFilter"
+                  (change)="applyFilters()"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <option value="TOUS">Tous les statuts</option>
+            <option value="EN_ATTENTE">En attente</option>
+            <option value="VALIDEE">Validée</option>
+            <option value="ANNULEE">Annulée</option>
+            <option value="REFUSEE">Refusée</option>
+          </select>
+        </div>
+
+        <!-- Reset -->
+        <div class="flex items-end">
+          <button (click)="resetFilters()"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+            Réinitialiser
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    @if (loading) {
+      <div class="flex justify-center items-center h-64">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    }
+
+    <!-- Tableau des réservations -->
+    @if (!loading) {
+      <div class="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-200">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Client</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Salle</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Horaire</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Durée</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Prix total</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              @for (res of filteredReservations; track res.id) {
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">{{ res.user.nom }}</div>
+                    <div class="text-sm text-gray-500">{{ res.user.email }}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">{{ res.salle.nom }}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ formatDate(res.dateReservation) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ formatHeure(res.heureDebut) }} - {{ formatHeure(res.heureFin) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ formaterDuree(res.heureDebut, res.heureFin) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600">
+                    {{ calculerPrixTotal(res) | number:'1.2-2' }} €
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ getStatutBadgeClass(res.statut) }}">
+                      {{ getStatutLabel(res.statut) }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    @if (res.statut === 'EN_ATTENTE') {
+                      <button (click)="validerReservation(res.id!)"
+                              [disabled]="actionEnCours === res.id"
+                              class="text-green-600 hover:text-green-900 mr-3 disabled:opacity-50">
+                        Valider
+                      </button>
+                      <button (click)="refuserReservation(res.id!)"
+                              [disabled]="actionEnCours === res.id"
+                              class="text-orange-600 hover:text-orange-900 mr-3 disabled:opacity-50">
+                        Refuser
+                      </button>
+                    }
+                    <button (click)="supprimerReservation(res.id!)"
+                            [disabled]="actionEnCours === res.id"
+                            class="text-red-600 hover:text-red-900 disabled:opacity-50">
+                      Supprimer
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="8" class="px-6 py-12 text-center text-sm text-gray-500">
+                    Aucune réservation trouvée
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  </div>
+</div>

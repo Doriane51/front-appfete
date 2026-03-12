@@ -1,0 +1,154 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Loading -->
+  @if (loading) {
+    <div class="flex justify-center items-center h-64">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+    </div>
+  }
+
+  <!-- Erreur -->
+  @if (error) {
+    <div class="bg-red-50 border-l-4 border-red-400 p-4">
+      <p class="text-red-700">{{ error }}</p>
+      <a routerLink="/salles" class="text-indigo-600 hover:text-indigo-500 mt-2 inline-block">
+        ← Retour aux salles
+      </a>
+    </div>
+  }
+
+  <!-- Détails de la salle -->
+  @if (salle && !loading) {
+    <div>
+      <!-- Navigation -->
+      <nav class="flex mb-6 text-sm">
+        <a routerLink="/" class="text-gray-500 hover:text-gray-700">Accueil</a>
+        <span class="mx-2 text-gray-400">›</span>
+        <a routerLink="/salles" class="text-gray-500 hover:text-gray-700">Salles</a>
+        <span class="mx-2 text-gray-400">›</span>
+        <span class="text-gray-900 font-medium">{{ salle.nom || 'Salle' }}</span>
+      </nav>
+
+      <!-- Image principale avec vérification -->
+      <div class="mb-6">
+        @if (salle.images && salle.images.length > 0) {
+          <div class="relative h-96 bg-gray-200 rounded-lg overflow-hidden">
+            <img [src]="salle.images[selectedImageIndex || 0] || 'https://via.placeholder.com/800x400?text=Pas+d\'image'"
+                 [alt]="salle.nom"
+                 class="w-full h-full object-cover">
+          </div>
+        } @else {
+          <div class="h-96 bg-indigo-100 rounded-lg flex items-center justify-center">
+            <span class="text-indigo-600 text-xl">Pas d'image disponible</span>
+          </div>
+        }
+      </div>
+
+      <!-- Informations principales -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Colonne gauche : Détails -->
+        <div class="lg:col-span-2">
+          <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ salle.nom || 'Nom non disponible' }}</h1>
+          <p class="text-gray-600 mb-6">{{ salle.description || 'Aucune description' }}</p>
+
+          <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <p class="text-sm text-gray-500">Capacité</p>
+              <p class="text-xl font-semibold">{{ salle.capacite || '?' }} personnes</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <p class="text-sm text-gray-500">Adresse</p>
+              <p class="text-xl font-semibold">{{ salle.adresse || 'Adresse non disponible' }}</p>
+            </div>
+          </div>
+
+          <!-- Équipements avec vérification -->
+          @if (salle.equipements && salle.equipements.length > 0) {
+            <div class="mb-6">
+              <h2 class="text-lg font-medium text-gray-900 mb-3">Équipements</h2>
+              <div class="flex flex-wrap gap-2">
+                @for (equip of salle.equipements; track equip) {
+                  <span class="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm">
+                    {{ equip }}
+                  </span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Colonne droite : Réservation -->
+        <div class="lg:col-span-1">
+          <div class="bg-white rounded-lg shadow-lg p-6 sticky top-8 border border-gray-200">
+            <div class="text-center mb-6">
+              <span class="text-3xl font-bold text-indigo-600">{{ (salle.prixHeure | number) || '0' }} €</span>
+              <span class="text-gray-500">/heure</span>
+            </div>
+
+            @if (!showReservationForm) {
+              <button (click)="openReservationForm()"
+                      class="w-full bg-indigo-600 text-white px-6 py-3 rounded-md hover:bg-indigo-700">
+                Réserver maintenant
+              </button>
+            }
+
+            @if (showReservationForm) {
+              <div>
+                <h3 class="text-lg font-medium mb-4">Nouvelle réservation</h3>
+
+                @if (successMessage) {
+                  <div class="mb-4 bg-green-50 text-green-700 p-3 rounded">
+                    {{ successMessage }}
+                  </div>
+                }
+
+                @if (errorMessage) {
+                  <div class="mb-4 bg-red-50 text-red-700 p-3 rounded">
+                    {{ errorMessage }}
+                  </div>
+                }
+
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium mb-1">Date</label>
+                    <input type="date"
+                           [(ngModel)]="reservation.date"
+                           [min]="today"
+                           class="w-full border rounded-md p-2">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium mb-1">Début</label>
+                    <input type="time"
+                           [(ngModel)]="reservation.heureDebut"
+                           class="w-full border rounded-md p-2">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium mb-1">Fin</label>
+                    <input type="time"
+                           [(ngModel)]="reservation.heureFin"
+                           class="w-full border rounded-md p-2">
+                  </div>
+                  <div class="flex space-x-3">
+                    <button (click)="submitReservation()"
+                            class="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                      Confirmer
+                    </button>
+                    <button (click)="closeReservationForm()"
+                            class="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200">
+                      Annuler
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <div class="mt-6 text-sm text-gray-500 space-y-2">
+              <p>✓ Réservation gratuite</p>
+              <p>✓ Paiement sur place</p>
+              <p>✓ Annulation gratuite</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
